@@ -534,7 +534,37 @@
             width: 250px; /* Fixed width for sidebar */
             z-index: 50; /* Ensure it's above main content when overlaying */
             transform: translateX(0); /* Ensure it's visible by default on desktop */
+            transition: width 0.3s ease, transform 0.3s ease; /* Smooth transition for width and transform */
         }
+
+        aside#sidebar.collapsed {
+            width: 70px; /* Collapsed width */
+        }
+
+        aside#sidebar.collapsed .sidebar-text {
+            display: none; /* Hide text labels */
+        }
+
+        aside#sidebar.collapsed .header-logo i {
+            margin-right: 0; /* Remove margin for icon */
+        }
+
+        aside#sidebar.collapsed .header-logo span {
+            display: none; /* Hide 'NerdyTrades' text */
+        }
+
+        aside#sidebar.collapsed .sidebar-link-content {
+            justify-content: center; /* Center icons when collapsed */
+        }
+
+        aside#sidebar.collapsed #theme-toggle span {
+            display: none; /* Hide theme toggle text */
+        }
+
+        aside#sidebar.collapsed #theme-toggle i {
+            margin-right: 0; /* Remove margin for theme toggle icon */
+        }
+
         /* Mobile Specific: Hide sidebar by default on mobile, show on toggle */
         @media (max-width: 768px) {
             aside#sidebar {
@@ -557,7 +587,13 @@
         #main-content {
             margin-left: 250px; /* Offset for fixed sidebar width */
             flex: 1; /* Allow main content to grow */
+            transition: margin-left 0.3s ease; /* Smooth transition for margin */
         }
+
+        #main-content.sidebar-collapsed {
+            margin-left: 70px; /* Offset for collapsed sidebar width */
+        }
+
         @media (max-width: 768px) {
             #main-content {
                 margin-left: 0; /* Remove margin when sidebar is hidden/overlay */
@@ -607,6 +643,8 @@
             font-weight: 500;
             transition: all 0.3s ease;
             margin-left: 1rem; /* Added margin to separate from title */
+            white-space: nowrap; /* Prevent text wrapping */
+            width: auto; /* Allow width to adjust to content */
         }
         .scan-mode-toggle:hover {
             transform: translateY(-2px);
@@ -637,45 +675,63 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="sidebar bg-gray-800 text-gray-300 p-4 flex flex-col justify-between rounded-r-xl shadow-lg transition-all duration-300 ease-in-out">
         <div>
-            <div class="header-logo mb-6">
-                <i data-lucide="line-chart" class="mr-2"></i> NerdyTrades
+            <div class="header-logo mb-6 flex items-center justify-between">
+                <div class="flex items-center">
+                    <i data-lucide="line-chart" class="mr-2"></i> <span class="sidebar-text">NerdyTrades</span>
+                </div>
+                <button id="sidebar-toggle" class="p-1 rounded-md hover:bg-gray-700 transition-colors duration-200">
+                    <i data-lucide="chevron-left" class="sidebar-toggle-icon"></i>
+                </button>
             </div>
             <nav>
                 <ul class="space-y-3">
                     <li>
                         <a href="#" id="nav-dashboard" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="layout-dashboard" class="mr-2"></i> Dashboard
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="layout-dashboard" class="mr-2"></i> <span class="sidebar-text">Dashboard</span>
+                            </div>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="nav-add-trade" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="plus-circle" class="mr-2"></i> Add Trade
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="plus-circle" class="mr-2"></i> <span class="sidebar-text">Add Trade</span>
+                            </div>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="nav-view-trades" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="clipboard-list" class="mr-2"></i> View Trades
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="clipboard-list" class="mr-2"></i> <span class="sidebar-text">View Trades</span>
+                            </div>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="nav-analytics" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="bar-chart-2" class="mr-2"></i> Advanced Analytics
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="bar-chart-2" class="mr-2"></i> <span class="sidebar-text">Advanced Analytics</span>
+                            </div>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="nav-reflections" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="book-open" class="mr-2"></i> Reflections
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="book-open" class="mr-2"></i> <span class="sidebar-text">Reflections</span>
+                            </div>
                         </a>
                     </li>
                     <li>
                         <a href="#" id="nav-lot-size-calculator" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="calculator" class="mr-2"></i> P&L Calculator
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="calculator" class="mr-2"></i> <span class="sidebar-text">P&L Calculator</span>
+                            </div>
                         </a>
                     </li>
-                    <!-- Brokerage Calculator removed as per request -->
                     <li>
                         <a href="#" id="nav-settings" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
-                            <i data-lucide="settings" class="mr-2"></i> Settings
+                            <div class="flex items-center sidebar-link-content">
+                                <i data-lucide="settings" class="mr-2"></i> <span class="sidebar-text">Settings</span>
+                            </div>
                         </a>
                     </li>
                 </ul>
@@ -683,7 +739,7 @@
         </div>
         <div class="mt-6">
             <button id="theme-toggle" class="w-full flex items-center justify-center p-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-colors duration-200 text-white text-sm">
-                <i data-lucide="sun-moon" class="mr-2"></i> Toggle Theme
+                <i data-lucide="sun-moon" class="mr-2"></i> <span class="sidebar-text">Toggle Theme</span>
             </button>
         </div>
     </aside>
@@ -751,8 +807,7 @@
     <script>
         // Register Chart.js Data Labels Plugin
         Chart.register(ChartDataLabels);
-        // Initialize Lucide icons
-        lucide.createIcons();
+        
 
         // --- Global Variables and Constants ---
         const DB_NAME = 'TradingJournalDB';
@@ -868,6 +923,7 @@
         ];
 
         // Define the specific sectors from the F&O HawkView script for the dropdown
+        // This list will be used to populate the sector filter dropdown.
         const FOHAWKVIEW_SECTORS = [
             "NIFTY 50", "NIFTY AUTO", "NIFTY BANK", "NIFTY CEMEN",
             "NIFTY ConDUR", "NIFTY CONSUMP", "NIFTY ENERGY", "NIFTY FINS",
@@ -879,6 +935,7 @@
 
 
         // Consolidated INSTRUMENTS_AND_LOT_SIZES from the F&O HawkView script
+        // Modified to allow stocks to belong to multiple sectors
         const INSTRUMENTS_AND_LOT_SIZES = (function() {
             const existingLotSizes = new Map([
                 ["BANKNIFTY", 35], ["FINNIFTY", 65], ["MIDCPNIFTY", 140], ["NIFTY", 75], ["NIFTY NEXT 50", 25],
@@ -929,19 +986,22 @@
                 ["VOLTAS", 375], ["WIPRO", 3000], ["YESBANK", 31100], ["ZYDUSLIFE", 900]
             ]);
 
-            const hawkViewStocks = [];
-            const addedSymbols = new Set(); // To prevent duplicates
+            const hawkViewStocksMap = new Map(); // Use a Map to easily update existing entries
 
-            // Helper to add stock if not already added
+            // Helper to add/update stock with its sectors
             function addStock(company, symbol, sector) {
-                if (!addedSymbols.has(symbol)) {
-                    hawkViewStocks.push({
+                let stock = hawkViewStocksMap.get(symbol);
+                if (!stock) {
+                    stock = {
                         company: company,
                         symbol: symbol,
-                        lotSize: existingLotSizes.get(symbol) || 1, // Use existing lot size or default to 1
-                        sector: sector
-                    });
-                    addedSymbols.add(symbol);
+                        lotSize: existingLotSizes.get(symbol) || 1,
+                        sectors: [] // Initialize as an array
+                    };
+                    hawkViewStocksMap.set(symbol, stock);
+                }
+                if (!stock.sectors.includes(sector)) {
+                    stock.sectors.push(sector); // Add sector if not already present
                 }
             }
 
@@ -1051,7 +1111,7 @@
                 { company: "HDFCAMC", symbol: "HDFCAMC" }, { company: "CHOLAFIN", symbol: "CHOLAFIN" },
                 { company: "LICHSGFIN", symbol: "LICHSGFIN" }, { company: "BAJAJFINSV", symbol: "BAJAJFINSV" },
                 { company: "SBIN", symbol: "SBIN" }, { company: "PFC", symbol: "PFC" },
-                { company: "RECLTD", symbol: "RECLTD" }, { company: "ICICIPRULI", symbol: "ICICIPRULI" },
+                { company: "REC", symbol: "REC" }, { company: "ICICIPRULI", symbol: "ICICIPRULI" }, // Changed RECLTD to REC
                 { company: "JIOFIN", symbol: "JIOFIN" }, { company: "SHRIRAMFIN", symbol: "SHRIRAMFIN" }
             ].forEach(s => addStock(s.company, s.symbol, "NIFTY FINS"));
 
@@ -1166,6 +1226,7 @@
             ].forEach(s => addStock(s.company, s.symbol, "NIFTY INFRA"));
 
             // Nifty Midcap 50 (Combined from part1 and part2)
+            // Ensuring all 50 stocks are explicitly listed and added
             [
                 { company: "PHOENIXLTD", symbol: "PHOENIXLTD" }, { company: "COFORGE", symbol: "COFORGE" },
                 { company: "SUPREMEIND", symbol: "SUPREMEIND" }, { company: "LUPIN", symbol: "LUPIN" },
@@ -1219,7 +1280,7 @@
                 { company: "LICI", symbol: "LICI" }, { company: "JSWENERGY", symbol: "JSWENERGY" },
                 { company: "LTIM", symbol: "LTIM" }, { company: "BRITANNIA", symbol: "BRITANNIA" },
                 { company: "LODHA", symbol: "LODHA" }, { company: "ADANIPOWER", symbol: "ADANIPOWER" },
-                { company: "RECLTD", symbol: "RECLTD" }, { company: "PNB", symbol: "PNB" },
+                { company: "REC", symbol: "REC" }, { company: "PNB", symbol: "PNB" }, // Changed RECLTD to REC
                 { company: "ADANINEOSL", symbol: "ADANINEOSL" }, { company: "MOTHERSON", symbol: "MOTHERSON" },
                 { company: "DMART", symbol: "DMART" }, { company: "IOC", symbol: "IOC" },
                 { company: "CGPOWER", symbol: "CGPOWER" }, { company: "NAUKRI", symbol: "NAUKRI" },
@@ -1247,7 +1308,7 @@
                 { company: "NHPC", symbol: "NHPC" }, { company: "SJVN", symbol: "SJVN" },
                 { company: "IRFC", symbol: "IRFC" }, { company: "HUDCO", symbol: "HUDCO" },
                 { company: "RBLBANK", symbol: "RBLBANK" }, { company: "OIL", symbol: "OIL" },
-                { company: "PFC", symbol: "PFC" }, { company: "RECLTD", symbol: "RECLTD" },
+                { company: "PFC", symbol: "PFC" }, { company: "REC", symbol: "REC" }, // Changed RECLTD to REC
                 { company: "PNB", symbol: "PNB" }, { company: "BANKINDIA", symbol: "BANKINDIA" },
                 { company: "UNIONBANK", symbol: "UNIONBANK" }, { company: "IDFCFIRSTB", symbol: "IDFCFIRSTB" },
                 { company: "BANDHANBNK", symbol: "BANDHANBNK" }, { company: "AUROPHARMA", symbol: "AUROPHARMA" },
@@ -1270,7 +1331,7 @@
                 { company: "AUBANK", symbol: "AUBANK" }, { company: "RBLBANK", symbol: "RBLBANK" }
             ].forEach(s => addStock(s.company, s.symbol, "NIFTY PBANK"));
 
-            return hawkViewStocks.sort((a, b) => a.symbol.localeCompare(b.symbol));
+            return Array.from(hawkViewStocksMap.values()).sort((a, b) => a.symbol.localeCompare(b.symbol));
         })();
 
 
@@ -1310,26 +1371,32 @@
         let currentCalendarDate = new Date();
 
         // === SCAN MODE CORE LOGIC ===
-        let scanModeActive = false;
-        let scanModePopup = null; // Hover popup window
-        let newTabModeActive = false; // New: Tracks if chart should open in new tab
-        let scanModeNewTabWindow = null; // New: Reusable window for new tab mode
+        let scanModeActive = false; // Controls if popup mode is active
+        let scanModePopup = null; // Hover popup window reference
+        let newTabModeActive = false; // Controls if new tab mode is active
+        let scanModeNewTabWindow = null; // Reusable window for new tab mode
 
-        // Function to update symbol cell styling based on scanModeActive
-        function updateSymbolCellStyling() {
-            document.querySelectorAll('.symbol-cell').forEach(cell => {
-                if (scanModeActive) {
-                    cell.classList.add('scan-mode-active-symbol');
-                } else {
-                    cell.classList.remove('scan-mode-active-symbol');
+        // Function to update the text content of the scan mode toggle button
+        function updateScanModeButtonText() {
+            const scanModeToggle = document.getElementById('scanModeToggle');
+            if (scanModeToggle) {
+                const scanModeTextSpan = scanModeToggle.querySelector('span:not(.scan-icon)');
+                if (scanModeTextSpan) {
+                    if (newTabModeActive) {
+                        scanModeTextSpan.textContent = 'Scan Mode - On Newtab';
+                    } else if (scanModeActive) {
+                        scanModeTextSpan.textContent = 'Scan Mode - On Popup';
+                    } else {
+                        scanModeTextSpan.textContent = 'Scan Mode - Off';
+                    }
                 }
-            });
+            }
         }
 
         // Toggle Scan Mode (CMD/CTRL + SHIFT + S)
         function toggleScanMode() {
             scanModeActive = !scanModeActive;
-            // If scan mode is activated, ensure new tab mode is off
+            // If scan mode (popup) is activated, ensure new tab mode is off
             if (scanModeActive) {
                 newTabModeActive = false;
             }
@@ -1353,6 +1420,7 @@
                 }
             }
             updateSymbolCellStyling(); // Update styling of symbol cells
+            updateScanModeButtonText(); // Update button text
         }
 
         // Toggle New Tab Mode (CMD/CTRL + SHIFT + K)
@@ -1383,6 +1451,7 @@
                 }
             }
             updateSymbolCellStyling(); // Update styling of symbol cells
+            updateScanModeButtonText(); // Update button text
         }
 
         // Open TradingView window function
@@ -3267,7 +3336,7 @@
                                     <th>S.No.</th>
                                     <th>Company</th>
                                     <th>Symbol</th>
-                                    <th>Sector</th>
+                                    <th>Sector(s)</th>
                                     <th>Entry ₹</th>
                                     <th>Exit ₹</th>
                                     <th>Lot Size</th>
@@ -3300,9 +3369,10 @@
             newTabModeActive = localStorage.getItem('newTabModeActive') === 'true';
 
             if (scanModeToggle) {
-                scanModeToggle.classList.toggle('active', scanModeActive);
+                scanModeToggle.classList.toggle('active', scanModeActive || newTabModeActive); // Active if either is on
             }
             scanModeToggle.addEventListener('click', toggleScanMode);
+            updateScanModeButtonText(); // Set initial text
 
 
             searchInput.addEventListener('input', filterAndDisplayLotSizes);
@@ -3396,8 +3466,12 @@
 
             let filtered = INSTRUMENTS_AND_LOT_SIZES.filter(item =>
                 (item.company.toLowerCase().includes(query) || item.symbol.toLowerCase().includes(query)) &&
-                (selectedSector === '' || item.sector === selectedSector)
+                (selectedSector === '' || (item.sectors && item.sectors.includes(selectedSector))) // Check if sectors array includes the selected sector
             );
+            
+            // Log the count of filtered stocks for debugging
+            console.log(`Filtered stocks for query "${query}" and sector "${selectedSector}": ${filtered.length}`);
+
 
             if (filtered.length === 0) {
                 noDataMessage.classList.remove('hidden');
@@ -3411,7 +3485,7 @@
                         <td class="px-3 py-2">${index + 1}</td>
                         <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="company">${item.company}</td>
                         <td class="px-3 py-2 symbol-cell" contenteditable="false" data-field="symbol">${item.symbol}</td>
-                        <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="sector">${item.sector || 'N/A'}</td>
+                        <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="sector">${item.sectors ? item.sectors.join(', ') : 'N/A'}</td>
                         <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="entry-price-input editable-cell input-cell"></td>
                         <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="exit-price-input editable-cell input-cell"></td>
                         <td class="px-3 py-2 lot-size-display">${item.lotSize}</td>
@@ -3602,6 +3676,48 @@
             }
         }
 
+        // --- Sidebar Collapse/Expand Logic ---
+        let sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggleIcon = document.querySelector('#sidebar-toggle i');
+
+            sidebarCollapsed = !sidebarCollapsed;
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                sidebarToggleIcon.setAttribute('data-lucide', 'chevron-right');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+                sidebarToggleIcon.setAttribute('data-lucide', 'chevron-left');
+            }
+            lucide.createIcons(); // Re-render icon
+        }
+
+        function applySavedSidebarState() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const sidebarToggleIcon = document.querySelector('#sidebar-toggle i');
+
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('sidebar-collapsed');
+                if (sidebarToggleIcon) sidebarToggleIcon.setAttribute('data-lucide', 'chevron-right');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('sidebar-collapsed');
+                if (sidebarToggleIcon) sidebarToggleIcon.setAttribute('data-lucide', 'chevron-left');
+            }
+            // lucide.createIcons() is called after this function in DOMContentLoaded
+            // so we don't need to call it here.
+        }
+
+
         // --- Navigation Logic ---
         async function showView(viewId, data = null) {
             const appContent = document.getElementById('app-content');
@@ -3620,6 +3736,12 @@
                     scanModeNewTabWindow.close();
                     scanModeNewTabWindow = null;
                 }
+                // Also reset scan mode states when navigating away
+                scanModeActive = false;
+                newTabModeActive = false;
+                localStorage.setItem('scanModeActive', false);
+                localStorage.setItem('newTabModeActive', false);
+                updateScanModeButtonText(); // Update button text to "Scan Mode - Off"
             }
 
             switch (viewId) {
@@ -3666,7 +3788,11 @@
 
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Lucide icons first, so elements with data-lucide attributes are processed
+            lucide.createIcons();
+
             applySavedTheme();
+            applySavedSidebarState(); // Apply sidebar state on load
             await openDB(); // Open IndexedDB when DOM is ready
 
             // Initial rendering of user's header elements
@@ -3687,6 +3813,9 @@
 
             // Theme toggle button in sidebar
             document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+            // Sidebar collapse toggle
+            document.getElementById('sidebar-toggle').addEventListener('click', toggleSidebar);
 
             // Mobile menu toggle
             const sidebar = document.getElementById('sidebar');
@@ -3717,12 +3846,12 @@
                 }
             });
 
-            // Ctrl+Shift+S to toggle Scan Mode (Global listener)
+            // Ctrl/Cmd+Shift+S to toggle Scan Mode (Global listener)
             document.addEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') { // Added e.metaKey for Cmd key
                     e.preventDefault(); // Avoid browser Save dialog
                     toggleScanMode();
-                } else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'k') {
+                } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'k') { // Added e.metaKey for Cmd key
                     e.preventDefault(); // Avoid browser shortcuts
                     toggleNewTabMode();
                 }
