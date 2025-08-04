@@ -620,6 +620,17 @@
         .scan-icon {
             font-size: 1.2em; /* Adjust icon size */
         }
+
+        /* Styling for symbol cells when scan mode is active */
+        .scan-mode-active-symbol {
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05)); /* Dim gradient */
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: background 0.3s ease, border-color 0.3s ease;
+            cursor: help; /* Indicate interactiveness */
+        }
+        .scan-mode-active-symbol:hover {
+            background: linear-gradient(45deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1)); /* Slightly brighter on hover */
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden flex-col">
@@ -1298,45 +1309,109 @@
         // Track current month and year for calendar
         let currentCalendarDate = new Date();
 
-        // === SCAN MODE CORE LOGIC (Moved to global scope for accessibility) ===
+        // === SCAN MODE CORE LOGIC ===
         let scanModeActive = false;
         let scanModePopup = null; // Hover popup window
+        let newTabModeActive = false; // New: Tracks if chart should open in new tab
+        let scanModeNewTabWindow = null; // New: Reusable window for new tab mode
 
-        // Toggle Scan Mode
+        // Function to update symbol cell styling based on scanModeActive
+        function updateSymbolCellStyling() {
+            document.querySelectorAll('.symbol-cell').forEach(cell => {
+                if (scanModeActive) {
+                    cell.classList.add('scan-mode-active-symbol');
+                } else {
+                    cell.classList.remove('scan-mode-active-symbol');
+                }
+            });
+        }
+
+        // Toggle Scan Mode (CMD/CTRL + SHIFT + S)
         function toggleScanMode() {
             scanModeActive = !scanModeActive;
+            // If scan mode is activated, ensure new tab mode is off
+            if (scanModeActive) {
+                newTabModeActive = false;
+            }
+
             const scanModeToggle = document.getElementById('scanModeToggle');
-            if (scanModeToggle) { // Check if button exists (only on P&L page)
+            if (scanModeToggle) {
                 scanModeToggle.classList.toggle('active', scanModeActive);
             }
             localStorage.setItem('scanModeActive', scanModeActive);
-            // If scan mode is deactivated, close the popup
-            if (!scanModeActive && scanModePopup && !scanModePopup.closed) {
-                scanModePopup.close();
-                scanModePopup = null;
+            localStorage.setItem('newTabModeActive', newTabModeActive); // Save new tab mode state too
+
+            // Close any open windows if modes are deactivated
+            if (!scanModeActive) {
+                if (scanModePopup && !scanModePopup.closed) {
+                    scanModePopup.close();
+                    scanModePopup = null;
+                }
+                if (scanModeNewTabWindow && !scanModeNewTabWindow.closed) {
+                    scanModeNewTabWindow.close();
+                    scanModeNewTabWindow = null;
+                }
             }
+            updateSymbolCellStyling(); // Update styling of symbol cells
+        }
+
+        // Toggle New Tab Mode (CMD/CTRL + SHIFT + K)
+        function toggleNewTabMode() {
+            newTabModeActive = !newTabModeActive;
+            // If new tab mode is activated, ensure scan mode (popup) is off
+            if (newTabModeActive) {
+                scanModeActive = false;
+                // Update scan mode toggle button visual if it exists
+                const scanModeToggle = document.getElementById('scanModeToggle');
+                if (scanModeToggle) {
+                    scanModeToggle.classList.remove('active');
+                }
+            }
+
+            localStorage.setItem('newTabModeActive', newTabModeActive);
+            localStorage.setItem('scanModeActive', scanModeActive); // Save scan mode state too
+
+            // Close any open windows if modes are deactivated
+            if (!newTabModeActive) {
+                if (scanModePopup && !scanModePopup.closed) {
+                    scanModePopup.close();
+                    scanModePopup = null;
+                }
+                if (scanModeNewTabWindow && !scanModeNewTabWindow.closed) {
+                    scanModeNewTabWindow.close();
+                    scanModeNewTabWindow = null;
+                }
+            }
+            updateSymbolCellStyling(); // Update styling of symbol cells
         }
 
         // Open TradingView window function
-        function openTradingViewWindow(ticker, isHover = false) {
+        function openTradingViewWindow(ticker) {
             if (!ticker) return;
             const url = `https://www.tradingview.com/chart/?symbol=NSE:${ticker}`;
 
-            if (isHover && scanModeActive) {
-                // HOVER + SCAN MODE = Popup
+            if (newTabModeActive) {
+                // NEW TAB MODE: Open/reuse in a new tab
+                if (scanModeNewTabWindow && !scanModeNewTabWindow.closed) {
+                    scanModeNewTabWindow.location.href = url;
+                    scanModeNewTabWindow.focus();
+                } else {
+                    // Open a new tab and store its reference for reuse
+                    scanModeNewTabWindow = window.open(url, "NerdyTradesChartTab");
+                }
+            } else if (scanModeActive) {
+                // SCAN MODE (default): Open/reuse in a popup window
                 if (scanModePopup && !scanModePopup.closed) {
                     scanModePopup.location.href = url;
                     scanModePopup.focus();
                 } else {
+                    // Open a new popup window and store its reference for reuse
                     scanModePopup = window.open(
                         url,
-                        "ScanModePopup",
-                        "width=600,height=500,left=100,top=100"
+                        "NerdyTradesChartPopup", // A unique name for the popup window
+                        "width=1000,height=600,left=100,top=100,resizable=yes,scrollbars=yes"
                     );
                 }
-            } else {
-                // Default behavior: open in new tab
-                window.open(url, "_blank");
             }
         }
         // === END SCAN MODE CORE LOGIC ===
@@ -3220,9 +3295,12 @@
 
             // Scan Mode button specific initialization
             const scanModeToggle = document.getElementById('scanModeToggle');
-            if (localStorage.getItem('scanModeActive') === 'true') {
-                scanModeActive = true;
-                scanModeToggle.classList.add('active');
+            // Load saved state for scanModeActive and newTabModeActive
+            scanModeActive = localStorage.getItem('scanModeActive') === 'true';
+            newTabModeActive = localStorage.getItem('newTabModeActive') === 'true';
+
+            if (scanModeToggle) {
+                scanModeToggle.classList.toggle('active', scanModeActive);
             }
             scanModeToggle.addEventListener('click', toggleScanMode);
 
@@ -3234,6 +3312,7 @@
             exportCalcCsvBtn.addEventListener('click', exportLotSizeTableAsCSV);
 
             filterAndDisplayLotSizes(); // Initial display
+            updateSymbolCellStyling(); // Apply initial styling based on loaded scanModeActive
         }
 
         /**
@@ -3282,36 +3361,25 @@
                 lotSizeInput.addEventListener('input', () => updateRowCalculations(row));
             }
 
-            const editableCells = row.querySelectorAll('[contenteditable="true"]');
-            editableCells.forEach(cell => {
-                // Prevent new lines in contenteditable
-                cell.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        cell.blur(); // Remove focus
-                    }
-                });
-            });
-
-            // Add hover listeners for scan mode on symbol cells
+            // Symbol cell should NOT be contenteditable
             const symbolCell = row.querySelector('.symbol-cell');
             if (symbolCell) {
+                symbolCell.setAttribute('contenteditable', 'false'); // Ensure it's not editable
+
                 let hoverTimeout;
                 symbolCell.addEventListener('mouseover', () => {
-                    if (scanModeActive) {
+                    // Only open chart if either scanModeActive OR newTabModeActive is true
+                    if (scanModeActive || newTabModeActive) {
                         const ticker = symbolCell.textContent.trim();
                         // Delay opening the popup slightly to avoid flickering on quick mouse movements
                         hoverTimeout = setTimeout(() => {
-                            openTradingViewWindow(ticker, true);
+                            openTradingViewWindow(ticker); // Call the unified function
                         }, 300); // 300ms delay
                     }
                 });
                 symbolCell.addEventListener('mouseout', () => {
                     clearTimeout(hoverTimeout); // Clear any pending hover
-                    if (scanModePopup && !scanModePopup.closed) {
-                        scanModePopup.close();
-                        scanModePopup = null;
-                    }
+                    // DO NOT close the window here. It should remain open until manually closed.
                 });
             }
         }
@@ -3342,7 +3410,7 @@
                     row.innerHTML = `
                         <td class="px-3 py-2">${index + 1}</td>
                         <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="company">${item.company}</td>
-                        <td class="px-3 py-2 editable-cell symbol-cell" contenteditable="true" data-field="symbol">${item.symbol}</td>
+                        <td class="px-3 py-2 symbol-cell" contenteditable="false" data-field="symbol">${item.symbol}</td>
                         <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="sector">${item.sector || 'N/A'}</td>
                         <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="entry-price-input editable-cell input-cell"></td>
                         <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="exit-price-input editable-cell input-cell"></td>
@@ -3356,6 +3424,7 @@
                     updateRowCalculations(row); // Initial calculation for preloaded rows
                 });
             }
+            updateSymbolCellStyling(); // Apply styling after rendering all rows
         }
 
         /**
@@ -3369,7 +3438,7 @@
             newRow.innerHTML = `
                 <td class="px-3 py-2">${rowCount}</td>
                 <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="company">Custom Company</td>
-                <td class="px-3 py-2 editable-cell symbol-cell" contenteditable="true" data-field="symbol">CUSTOM</td>
+                <td class="px-3 py-2 symbol-cell" contenteditable="false" data-field="symbol">CUSTOM</td>
                 <td class="px-3 py-2 editable-cell" contenteditable="true" data-field="sector">Custom Sector</td>
                 <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="entry-price-input editable-cell input-cell"></td>
                 <td class="px-3 py-2"><input type="number" step="0.01" value="0" class="exit-price-input editable-cell input-cell"></td>
@@ -3382,6 +3451,7 @@
             addRowEventListeners(newRow);
             updateRowCalculations(newRow); // Initial calculation for new custom row
             document.getElementById('no-lot-data-message').classList.add('hidden'); // Hide no data message if adding first row
+            updateSymbolCellStyling(); // Apply styling to the new row's symbol cell
         }
 
         /**
@@ -3540,10 +3610,16 @@
             // Before rendering a new view, destroy all existing charts
             destroyAllCharts();
 
-            // When navigating away from P&L Calculator, close the popup if open
-            if (viewId !== 'lot-size-calculator' && scanModePopup && !scanModePopup.closed) {
-                scanModePopup.close();
-                scanModePopup = null;
+            // When navigating away from P&L Calculator, close the popup/new tab if open
+            if (viewId !== 'lot-size-calculator') {
+                if (scanModePopup && !scanModePopup.closed) {
+                    scanModePopup.close();
+                    scanModePopup = null;
+                }
+                if (scanModeNewTabWindow && !scanModeNewTabWindow.closed) {
+                    scanModeNewTabWindow.close();
+                    scanModeNewTabWindow = null;
+                }
             }
 
             switch (viewId) {
@@ -3646,6 +3722,9 @@
                 if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 's') {
                     e.preventDefault(); // Avoid browser Save dialog
                     toggleScanMode();
+                } else if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'k') {
+                    e.preventDefault(); // Avoid browser shortcuts
+                    toggleNewTabMode();
                 }
             });
         });
