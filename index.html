@@ -730,6 +730,162 @@
         .scan-mode-active-symbol:hover {
             background: linear-gradient(45deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1));
         }
+
+        /* Sector HawkView Specific Styles */
+        .hawkview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        .hawkview-circle-area {
+            position: relative;
+            width: 350px; /* Increased size */
+            height: 350px; /* Increased size */
+            border-radius: 50%;
+            background-color: var(--input-group-bg);
+            border: 3px solid var(--accent-primary);
+            display: flex;
+            flex-direction: column; /* Allow text and emoji to stack */
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+            flex-shrink: 0;
+            margin-bottom: 2rem;
+            overflow: hidden; /* Hide items that might go outside during drag */
+            animation: pulseGlow 2s infinite alternate; /* Circle pulse animation */
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); border-color: var(--accent-primary); }
+            100% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.7); border-color: color-mix(in srgb, var(--accent-primary) 80%, white); }
+        }
+
+
+        .hawkview-circle-area.drag-over {
+            border-color: var(--green-text);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.6);
+        }
+
+        .hawkview-circle-text {
+            color: var(--accent-text-light);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            position: relative; /* For floating emoji */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hawkview-circle-text .meditation-emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-top: 0.5rem;
+            animation: floatEmoji 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatEmoji {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0); }
+        }
+
+        .hawkview-draggable-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 1.5rem;
+        }
+
+        .hawkview-item {
+            background-color: var(--input-group-bg);
+            color: var(--input-text);
+            padding: 0.6rem 1rem;
+            border-radius: 9999px; /* Pill shape */
+            border: 1px solid var(--border-color);
+            cursor: grab;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .hawkview-item:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .hawkview-item.dragging {
+            opacity: 0.6;
+            transform: scale(0.9);
+        }
+
+        .hawkview-item.dropped {
+            position: absolute; /* Allow precise positioning within the circle */
+            cursor: default;
+            z-index: 10;
+            pointer-events: none; /* Prevent re-dragging once dropped */
+            background-color: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+            animation: none; /* Remove pulseGlow from dropped items */
+        }
+
+        .hawkview-item .emoji {
+            font-size: 1.2em;
+        }
+
+        .hawkview-journal-entry {
+            background-color: var(--input-group-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .hawkview-journal-entry-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .hawkview-journal-item-tag {
+            background-color: var(--accent-primary);
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Responsive adjustments for HawkView */
+        @media (max-width: 640px) {
+            .hawkview-circle-area {
+                width: 250px;
+                height: 250px;
+            }
+            .hawkview-item {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.8rem;
+            }
+            .hawkview-item .emoji {
+                font-size: 1em;
+            }
+        }
+
     </style>
 </head>
 <body class="flex h-screen overflow-hidden flex-col">
@@ -782,9 +938,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" id="nav-lot-size-calculator" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
+                        <a href="#" id="nav-take-under-control" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
                             <div class="flex items-center sidebar-link-content">
-                                <i data-lucide="calculator" class="mr-2"></i> <span class="sidebar-text">P&L Calculator</span>
+                                <i data-lucide="eye" class="mr-2"></i> <span class="sidebar-text">TakeUnderControl 🧘</span>
                             </div>
                         </a>
                     </li>
@@ -875,6 +1031,7 @@
         const DB_VERSION = 2; // Current DB version
         const STORE_TRADES = 'trades';
         const STORE_REFLECTIONS = 'reflections'; // New IndexedDB store for reflections
+        const STORE_HAWKVIEW_JOURNAL = 'hawkview_journal'; // New IndexedDB store for Sector HawkView entries
 
         let db; // IndexedDB instance
 
@@ -1417,6 +1574,45 @@
             { name: "Overconfident", emoji: "😬" }
         ];
 
+        // New data for Sector HawkView draggable items
+        const HAWKVIEW_ITEMS = [
+            { id: 'breakouts', name: 'Breakouts', emoji: '📈', color: '#f59e0b' },
+            { id: 'cibh', name: 'CIBH', emoji: '🎯', color: '#6366f1' },
+            { id: 'cibl', name: 'CIBL', emoji: '📉', color: '#ef4444' },
+            { id: 'cibm', name: 'CIBM', emoji: '⚖️', color: '#22c55e' },
+            { id: 'vwap-confluence', name: 'VWAP Confluence', emoji: '🌊', color: '#06b6d4' },
+            { id: 'spotted-reversal', name: 'Spotted Reversal', emoji: '🔄', color: '#f472b6' },
+            { id: 'trendlines', name: 'Trendlines', emoji: '📏', color: '#eab308' },
+            { id: 'sectors-rotation', name: 'Sectors Rotation', emoji: '🔄', color: '#a855f7' },
+            { id: 'sector-supports', name: 'Sector Supports', emoji: '🛡️', color: '#14b8a6' },
+            { id: 'fvgs', name: 'FVGs', emoji: '📊', color: '#3b82f6' },
+            { id: 'hourly-breakout', name: 'Hourly Breakout', emoji: '⬆️', color: '#fb923c' },
+            { id: 'hourly-breakdown', name: 'Hourly Breakdown', emoji: '⬇️', color: '#dc2626' },
+            { id: 'daily-chart-check', name: 'Daily Chart Check', emoji: '🗓️', color: '#64748b' },
+            { id: 'hourly-chart-check', name: 'Hourly Chart Check', emoji: '⏱️', color: '#64748b' },
+            { id: '15m-chart-check', name: '15m Chart Check', emoji: '⚡', color: '#64748b' },
+            { id: 'discipline', name: 'Discipline', emoji: '🧘', color: '#22c55e' },
+            { id: 'patience', name: 'Patience', emoji: '😌', color: '#06b6d4' },
+            { id: 'risk-management', name: 'Risk Management', emoji: '🚨', color: '#ef4444' },
+            { id: 'overtrading', name: 'Overtrading', emoji: '🤯', color: '#f59e0b' },
+            { id: 'revenge-trading', name: 'Revenge Trading', emoji: '😡', color: '#dc2626' },
+            { id: 'confirmation-bias', name: 'Confirmation Bias', emoji: '🤔', color: '#a855f7' },
+            { id: 'market-sentiment', name: 'Market Sentiment', emoji: '☁️', color: '#64748b' },
+            { id: 'news-impact', name: 'News Impact', emoji: '📰', color: '#fb923c' },
+            { id: 'pre-market-analysis', name: 'Pre-Market Analysis', emoji: '🌅', color: '#6366f1' },
+            { id: 'post-market-review', name: 'Post-Market Review', emoji: '🌃', color: '#64748b' },
+            { id: 'trade-plan-adherence', name: 'Trade Plan Adherence', emoji: '✅', color: '#22c55e' },
+            { id: 'emotional-control', name: 'Emotional Control', emoji: '🧠', color: '#06b6d4' },
+            { id: 'profit-taking', name: 'Profit Taking', emoji: '💰', color: '#eab308' },
+            { id: 'stop-loss-hit', name: 'Stop Loss Hit', emoji: '🛑', color: '#ef4444' },
+            { id: 'volume-analysis', name: 'Volume Analysis', emoji: '🔊', color: '#a855f7' },
+            { id: 'support-resistance', name: 'Support/Resistance', emoji: '🧱', color: '#14b8a6' },
+            { id: 'liquidity', name: 'Liquidity', emoji: '💧', color: '#3b82f6' },
+            { id: 'spread', name: 'Spread', emoji: '↔️', color: '#f472b6' },
+            { id: 'order-flow', name: 'Order Flow', emoji: '➡️', color: '#fb923c' },
+        ];
+
+
         const instrumentTypes = [
             "Cash", "Futures", "Options-CE", "Options-PE"
         ];
@@ -1427,6 +1623,7 @@
 
         let allTrades = []; // Cache all trades globally
         let allReflections = []; // Cache all reflections globally
+        let allHawkViewEntries = []; // Cache all Sector HawkView entries globally
 
         // Track current month and year for calendar
         let currentCalendarDate = new Date();
@@ -1708,7 +1905,7 @@
 
         /**
          * Initializes the IndexedDB database.
-         * Creates the 'trades' and 'reflections' object stores if they don't exist.
+         * Creates the 'trades', 'reflections', and 'hawkview_journal' object stores if they don't exist.
          * @returns {Promise<IDBDatabase>} A promise that resolves with the database instance.
          */
         function openDB() {
@@ -1729,6 +1926,12 @@
                         const reflectionStore = db.createObjectStore(STORE_REFLECTIONS, { keyPath: 'id', autoIncrement: true });
                         reflectionStore.createIndex('date', 'date', { unique: false });
                     }
+                    if (!db.objectStoreNames.contains(STORE_HAWKVIEW_JOURNAL)) {
+                        const hawkviewStore = db.createObjectStore(STORE_HAWKVIEW_JOURNAL, { keyPath: 'id', autoIncrement: true });
+                        hawkviewStore.createIndex('date', 'date', { unique: false });
+                        // Add an index for rank if needed for querying/sorting
+                        hawkviewStore.createIndex('rank', 'rank', { unique: false });
+                    }
                 };
 
                 request.onsuccess = (event) => {
@@ -1746,7 +1949,7 @@
 
         /**
          * Adds a new entry to a specified IndexedDB store.
-         * @param {string} storeName - The name of the object store (e.g., STORE_TRADES, STORE_REFLECTIONS).
+         * @param {string} storeName - The name of the object store (e.g., STORE_TRADES, STORE_REFLECTIONS, STORE_HAWKVIEW_JOURNAL).
          * @param {Object} data - The object to add.
          * @returns {Promise<void>} A promise that resolves when the data is added.
          */
@@ -2470,6 +2673,8 @@
         function renderCalendar(allTrades) {
             const calendarView = document.getElementById('calendar-view');
             const currentMonthYearHeader = document.getElementById('current-month-year');
+            if (!calendarView || !currentMonthYearHeader) return; // Defensive check
+
             calendarView.innerHTML = ''; // Clear previous calendar
 
             const year = currentCalendarDate.getFullYear();
@@ -3145,6 +3350,12 @@
             allReflections = await getEntries(STORE_REFLECTIONS); // Ensure fresh data
             const reflectionsList = document.getElementById('reflections-list');
             const noReflectionsMessage = document.getElementById('no-reflections-message');
+
+            if (!reflectionsList || !noReflectionsMessage) {
+                console.error("Reflections list or message element not found.");
+                return; // Exit if elements are not available
+            }
+
             reflectionsList.innerHTML = ''; // Clear existing
 
             if (allReflections.length === 0) {
@@ -3248,7 +3459,8 @@
             try {
                 const trades = await getEntries(STORE_TRADES);
                 const reflections = await getEntries(STORE_REFLECTIONS);
-                const combinedData = { trades: trades, reflections: reflections };
+                const hawkviewJournal = await getEntries(STORE_HAWKVIEW_JOURNAL); // Export HawkView data
+                const combinedData = { trades: trades, reflections: reflections, hawkviewJournal: hawkviewJournal };
 
                 const dataStr = JSON.stringify(combinedData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
@@ -3283,15 +3495,17 @@
                     const importedData = JSON.parse(e.target.result);
                     const importedTrades = importedData.trades;
                     const importedReflections = importedData.reflections;
+                    const importedHawkViewJournal = importedData.hawkviewJournal || []; // New: import HawkView data
 
-                    if (!Array.isArray(importedTrades) || !Array.isArray(importedReflections)) {
-                        showMessage("Import Error", "Invalid file format. Please upload a JSON object with 'trades' and 'reflections' arrays.");
+                    if (!Array.isArray(importedTrades) || !Array.isArray(importedReflections) || !Array.isArray(importedHawkViewJournal)) {
+                        showMessage("Import Error", "Invalid file format. Please upload a JSON object with 'trades', 'reflections', and 'hawkviewJournal' arrays.");
                         return;
                     }
 
                     // Clear existing data before importing new data
                     await clearStore(STORE_TRADES);
                     await clearStore(STORE_REFLECTIONS);
+                    await clearStore(STORE_HAWKVIEW_JOURNAL); // Clear HawkView store
 
                     const tradeTransaction = db.transaction([STORE_TRADES], 'readwrite');
                     const tradeObjectStore = tradeTransaction.objectStore(STORE_TRADES);
@@ -3309,17 +3523,27 @@
                         reflectionObjectStore.add(reflectionToStore);
                     }
 
-                    tradeTransaction.oncomplete = reflectionTransaction.oncomplete = async () => {
+                    const hawkviewTransaction = db.transaction([STORE_HAWKVIEW_JOURNAL], 'readwrite');
+                    const hawkviewObjectStore = hawkviewTransaction.objectStore(STORE_HAWKVIEW_JOURNAL);
+                    for (const entry of importedHawkViewJournal) {
+                        const entryToStore = { ...entry };
+                        delete entryToStore.id; // Let IndexedDB auto-increment new IDs
+                        hawkviewObjectStore.add(entryToStore);
+                    }
+
+
+                    tradeTransaction.oncomplete = reflectionTransaction.oncomplete = hawkviewTransaction.oncomplete = async () => {
                         await showMessage("Success", "Data imported successfully!");
                         allTrades = await getEntries(STORE_TRADES); // Re-fetch all trades to update cache
                         allReflections = await getEntries(STORE_REFLECTIONS); // Re-fetch all reflections to update cache
+                        allHawkViewEntries = await getEntries(STORE_HAWKVIEW_JOURNAL); // Re-fetch HawkView data
 
                         // Re-render current view to reflect new data
                         const currentView = document.getElementById('app-content').dataset.currentView;
                         showView(currentView);
                     };
 
-                    tradeTransaction.onerror = reflectionTransaction.onerror = (error) => {
+                    tradeTransaction.onerror = reflectionTransaction.onerror = hawkviewTransaction.onerror = (error) => {
                         console.error("Error during import transaction:", error);
                         showMessage("Import Error", "Failed to import some data. Check console for details.");
                     };
@@ -3345,8 +3569,10 @@
                 try {
                     await clearStore(STORE_TRADES);
                     await clearStore(STORE_REFLECTIONS);
+                    await clearStore(STORE_HAWKVIEW_JOURNAL); // Clear HawkView store
                     allTrades = []; // Clear local cache
                     allReflections = []; // Clear local cache
+                    allHawkViewEntries = []; // Clear local cache
                     await showMessage("Data Deleted", "All trading journal data has been successfully deleted.");
                     showView('dashboard'); // Go back to an empty dashboard
                 } catch (error) {
@@ -3357,25 +3583,59 @@
         }
 
 
+        // --- Sector HawkView (formerly P&L Calculator) Logic ---
+        let selectedHawkViewItems = []; // Array to hold items dropped into the circle for the current session
+
         /**
-         * Renders the Lot Size Calculator page (now P&L Calculator).
+         * Renders the Sector HawkView page.
          */
-        function renderLotSizeCalculator() {
+        async function renderSectorHawkView() {
             const appContent = document.getElementById('app-content');
-            // Use the predefined FOHAWKVIEW_SECTORS for the filter dropdown
-            const allSectors = ["All Stocks", ...FOHAWKVIEW_SECTORS]; // Add "All Stocks" option
+            const allSectors = ["All Stocks", ...FOHAWKVIEW_SECTORS];
 
             appContent.innerHTML = `
                 <div class="bg-zinc-800 rounded-lg p-6 shadow-xl mb-6 border border-zinc-700">
-                    <div class="flex items-center mb-5"> <!-- Flex container for title and button -->
-                        <h2 class="text-2xl font-bold text-indigo-400">P&L Calculator</h2>
+                    <div class="flex items-center mb-5">
+                        <h2 class="text-2xl font-bold text-indigo-400">TakeUnderControl 🧘</h2>
                         <button id="scanModeToggle" class="scan-mode-toggle">
                             <span class="scan-icon">🔍</span>
                             <span>Scan Mode</span>
                         </button>
                     </div>
-                    <p class="text-zinc-300 mb-4">Calculate estimated Net P&L for various instruments.</p>
+                    <p class="text-zinc-300 mb-4">Analyze market sectors and psychological factors for your daily trading. Drag and drop elements into the circle to log your daily focus.</p>
 
+                    <!-- Date and Time for HawkView Journal -->
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 p-4 rounded-lg bg-zinc-700 border border-zinc-600">
+                        <div class="flex items-center gap-2 text-zinc-300">
+                            <i data-lucide="calendar"></i>
+                            <span id="hawkview-current-date">${new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-zinc-300 mt-2 md:mt-0">
+                            <i data-lucide="clock"></i>
+                            <span id="hawkview-current-time">${new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true })}</span>
+                        </div>
+                        <button id="save-hawkview-journal-btn" class="btn-primary mt-4 md:mt-0 flex items-center text-sm">
+                            <i data-lucide="save" class="mr-2"></i> Save Daily HawkView
+                        </button>
+                    </div>
+
+                    <div class="hawkview-container mb-8">
+                        <div class="hawkview-draggable-items" id="hawkview-draggable-items">
+                            <!-- Draggable items will be populated here by JS -->
+                        </div>
+                        <div class="hawkview-circle-area" id="hawkview-circle-area">
+                            <span class="hawkview-circle-text">What in your Control <span class="meditation-emoji">🧘</span></span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold mt-8 mb-4 text-indigo-400">TakeUnderControl Progress</h3>
+                    <div class="bg-zinc-700 p-5 rounded-lg shadow-md border border-zinc-600 chart-bg mb-8">
+                        <div class="chart-container">
+                            <canvas id="hawkview-progress-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold mb-4 text-indigo-400">P&L Calculator</h3>
                     <div class="flex flex-col md:flex-row gap-3 mb-5">
                         <div class="input-group flex-1">
                             <i data-lucide="search" class="text-zinc-400 mr-3 flex-shrink-0"></i>
@@ -3431,10 +3691,17 @@
                         </table>
                     </div>
                     <p id="no-lot-data-message" class="text-center text-zinc-400 mt-4 hidden">No matching instruments found.</p>
+
+                    <h3 class="text-xl font-bold mt-8 mb-4 text-indigo-400">Daily HawkView Journal</h3>
+                    <div id="hawkview-journal-list" class="space-y-4">
+                        <p class="text-zinc-400 text-center" id="no-hawkview-journal-message">No HawkView entries logged yet.</p>
+                        <!-- Past HawkView entries will be loaded here -->
+                    </div>
                 </div>
             `;
             lucide.createIcons();
 
+            // P&L Calculator related event listeners
             const searchInput = document.getElementById('lot-calculator-search');
             const filterSectorSelect = document.getElementById('filter-sector');
             const tradeTypeSelect = document.getElementById('calc-trade-type');
@@ -3448,21 +3715,384 @@
             newTabModeActive = localStorage.getItem('newTabModeActive') === 'true';
 
             if (scanModeToggle) {
-                scanModeToggle.classList.toggle('active', scanModeActive || newTabModeActive); // Active if either is on
+                scanModeToggle.classList.toggle('active', scanModeActive || newTabModeActive);
             }
             scanModeToggle.addEventListener('click', toggleScanMode);
-            updateScanModeButtonText(); // Set initial text
-
+            updateScanModeButtonText();
 
             searchInput.addEventListener('input', filterAndDisplayLotSizes);
             filterSectorSelect.addEventListener('change', filterAndDisplayLotSizes);
-            tradeTypeSelect.addEventListener('change', filterAndDisplayLotSizes); // Recalculate all P&L when trade type changes
+            tradeTypeSelect.addEventListener('change', filterAndDisplayLotSizes);
             addCustomRowBtn.addEventListener('click', addCustomLotSizeRow);
             exportCalcCsvBtn.addEventListener('click', exportLotSizeTableAsCSV);
 
-            filterAndDisplayLotSizes(); // Initial display
-            updateSymbolCellStyling(); // Apply initial styling based on loaded scanModeActive
+            filterAndDisplayLotSizes();
+            updateSymbolCellStyling();
+
+            // HawkView Journal related logic
+            populateHawkViewDraggableItems();
+            setupHawkViewDragAndDrop();
+            document.getElementById('save-hawkview-journal-btn').addEventListener('click', saveDailyHawkViewJournal);
+            await displayHawkViewJournal(); // Display past entries
+            await renderTakeUnderControlProgressChart(); // Render the new chart
         }
+
+        /**
+         * Populates the draggable items for Sector HawkView.
+         */
+        function populateHawkViewDraggableItems() {
+            const container = document.getElementById('hawkview-draggable-items');
+            container.innerHTML = ''; // Clear existing items
+            HAWKVIEW_ITEMS.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'hawkview-item';
+                div.draggable = true;
+                div.setAttribute('data-id', item.id);
+                div.setAttribute('data-name', item.name);
+                div.setAttribute('data-emoji', item.emoji);
+                div.setAttribute('data-color', item.color);
+                div.style.backgroundColor = item.color; // Apply color to background
+                div.style.color = 'white'; // Ensure text is readable on colored background
+                div.innerHTML = `<span class="emoji">${item.emoji}</span><span>${item.name}</span>`;
+                container.appendChild(div);
+            });
+        }
+
+        /**
+         * Sets up drag and drop functionality for Sector HawkView.
+         */
+        function setupHawkViewDragAndDrop() {
+            const draggableItemsContainer = document.getElementById('hawkview-draggable-items');
+            const circleArea = document.getElementById('hawkview-circle-area');
+            const circleText = document.querySelector('.hawkview-circle-text');
+
+            let draggedItem = null;
+
+            draggableItemsContainer.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.hawkview-item');
+                if (draggedItem) {
+                    e.dataTransfer.setData('text/plain', draggedItem.dataset.id);
+                    draggedItem.classList.add('dragging');
+                    // Hide the original item temporarily
+                    setTimeout(() => draggedItem.style.display = 'none', 0);
+                }
+            });
+
+            draggableItemsContainer.addEventListener('dragend', () => {
+                if (draggedItem) {
+                    draggedItem.classList.remove('dragging');
+                    draggedItem.style.display = 'flex'; // Restore display if not dropped
+                    draggedItem = null;
+                }
+            });
+
+            circleArea.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Allow drop
+                circleArea.classList.add('drag-over');
+            });
+
+            circleArea.addEventListener('dragleave', () => {
+                circleArea.classList.remove('drag-over');
+            });
+
+            circleArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                circleArea.classList.remove('drag-over');
+                const itemId = e.dataTransfer.getData('text/plain');
+                const itemData = HAWKVIEW_ITEMS.find(item => item.id === itemId);
+
+                if (itemData && !selectedHawkViewItems.some(item => item.id === itemData.id)) {
+                    // Add to selected items array
+                    selectedHawkViewItems.push(itemData);
+
+                    // Create a new element to represent the dropped item inside the circle
+                    const droppedElement = document.createElement('div');
+                    droppedElement.className = 'hawkview-item dropped'; // Use 'dropped' class for styling
+                    droppedElement.innerHTML = `<span class="emoji">${itemData.emoji}</span><span>${itemData.name}</span>`;
+                    droppedElement.style.backgroundColor = itemData.color;
+                    droppedElement.style.color = 'white';
+
+                    // Position the dropped element randomly within the circle for visual spread
+                    const circleRadius = circleArea.offsetWidth / 2;
+                    const itemWidth = 100; // Approximate width for positioning
+                    const itemHeight = 40; // Approximate height for positioning
+
+                    // Calculate random position within the circle bounds
+                    let randomAngle = Math.random() * 2 * Math.PI;
+                    let randomDistance = Math.random() * (circleRadius * 0.7); // Keep it within 70% of radius to avoid edges
+
+                    let x = circleRadius + randomDistance * Math.cos(randomAngle) - (itemWidth / 2);
+                    let y = circleRadius + randomDistance * Math.sin(randomAngle) - (itemHeight / 2);
+
+                    // Ensure it stays within bounds
+                    x = Math.max(0, Math.min(circleArea.offsetWidth - itemWidth, x));
+                    y = Math.max(0, Math.min(circleArea.offsetHeight - itemHeight, y));
+
+                    droppedElement.style.left = `${x}px`;
+                    droppedElement.style.top = `${y}px`;
+                    droppedElement.style.position = 'absolute'; // Ensure absolute positioning
+
+                    circleArea.appendChild(droppedElement);
+                    circleText.style.display = 'none'; // Hide "Drag & Drop" text
+                }
+
+                // Re-enable the original draggable item in its container regardless of drop success
+                if (draggedItem) {
+                    draggedItem.style.display = 'flex'; // Make it visible again outside
+                    draggedItem.classList.remove('dragging');
+                    draggedItem = null;
+                }
+            });
+
+            // Allow clicking dropped items to remove them
+            circleArea.addEventListener('click', (e) => {
+                const droppedItem = e.target.closest('.hawkview-item.dropped');
+                if (droppedItem) {
+                    const itemId = droppedItem.dataset.id;
+                    selectedHawkViewItems = selectedHawkViewItems.filter(item => item.id !== itemId);
+                    droppedItem.remove();
+                    if (selectedHawkViewItems.length === 0) {
+                        circleText.style.display = 'flex'; // Show "What in your Control 🧘" text if circle is empty
+                    }
+                }
+            });
+        }
+
+        /**
+         * Calculates the rank based on the number of selected items.
+         * @param {number} itemCount - The number of items selected.
+         * @returns {string} The calculated rank.
+         */
+        function calculateHawkViewRank(itemCount) {
+            if (itemCount >= 10) return 'Top Tier (10+)';
+            if (itemCount >= 6) return 'High Control (6-9)';
+            if (itemCount >= 3) return 'Moderate Control (3-5)';
+            return 'Low Control (0-2)';
+        }
+
+        /**
+         * Saves the current selected HawkView items as a daily journal entry.
+         */
+        async function saveDailyHawkViewJournal() {
+            if (selectedHawkViewItems.length === 0) {
+                showMessage("No Items Selected", "Please drag some items into the circle before saving.");
+                return;
+            }
+
+            const today = new Date();
+            const dateString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+            const timeString = today.toTimeString().substring(0, 5); // HH:MM
+            const rank = calculateHawkViewRank(selectedHawkViewItems.length);
+
+            // Check if an entry for today already exists
+            const existingEntry = allHawkViewEntries.find(entry => entry.date === dateString);
+
+            const journalEntry = {
+                date: dateString,
+                time: timeString,
+                items: selectedHawkViewItems.map(item => ({ id: item.id, name: item.name, emoji: item.emoji, color: item.color })),
+                rank: rank // Store the calculated rank
+            };
+
+            try {
+                if (existingEntry) {
+                    // If entry exists, update it
+                    journalEntry.id = existingEntry.id;
+                    await updateEntry(STORE_HAWKVIEW_JOURNAL, journalEntry);
+                    await showMessage("Updated", `HawkView for ${dateString} updated successfully!`);
+                } else {
+                    // Otherwise, add a new entry
+                    await addEntry(STORE_HAWKVIEW_JOURNAL, journalEntry);
+                    await showMessage("Saved", `Daily HawkView for ${dateString} saved successfully!`);
+                }
+
+                // Clear selected items and refresh display
+                selectedHawkViewItems = [];
+                const circleArea = document.getElementById('hawkview-circle-area');
+                if (circleArea) { // Defensive check
+                    circleArea.innerHTML = `<span class="hawkview-circle-text">What in your Control <span class="meditation-emoji">🧘</span></span>`;
+                }
+                
+                allHawkViewEntries = await getEntries(STORE_HAWKVIEW_JOURNAL); // Refresh cache
+                await displayHawkViewJournal(); // Re-display past entries
+                await renderTakeUnderControlProgressChart(); // Re-render the progress chart
+            } catch (error) {
+                console.error("Failed to save daily HawkView journal:", error);
+                showMessage("Error", "Failed to save daily HawkView journal.");
+            }
+        }
+
+        /**
+         * Displays past HawkView journal entries.
+         */
+        async function displayHawkViewJournal() {
+            allHawkViewEntries = await getEntries(STORE_HAWKVIEW_JOURNAL); // Ensure fresh data
+            const journalList = document.getElementById('hawkview-journal-list');
+            const noEntriesMessage = document.getElementById('no-hawkview-journal-message');
+
+            if (!journalList || !noEntriesMessage) {
+                console.error("HawkView journal list or message element not found.");
+                return; // Exit if elements are not available
+            }
+
+            journalList.innerHTML = ''; // Clear existing
+
+            if (allHawkViewEntries.length === 0) {
+                noEntriesMessage.classList.remove('hidden');
+                return;
+            } else {
+                noEntriesMessage.classList.add('hidden');
+            }
+
+            allHawkViewEntries.sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date descending
+
+            allHawkViewEntries.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = "hawkview-journal-entry";
+                const itemsHtml = entry.items.map(item =>
+                    `<span class="hawkview-journal-item-tag" style="background-color: ${item.color || '#6366f1'};">${item.emoji} ${item.name}</span>`
+                ).join('');
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-lg text-indigo-300">${entry.date} <span class="text-sm text-zinc-400">(${entry.time})</span></span>
+                        <span class="text-zinc-300 text-sm font-semibold">Rank: ${entry.rank || 'N/A'}</span>
+                        <button class="text-red-500 hover:text-red-600 delete-hawkview-entry-btn text-sm" data-id="${entry.id}">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                    <div class="hawkview-journal-entry-items">
+                        ${itemsHtml}
+                    </div>
+                `;
+                journalList.appendChild(div);
+            });
+            lucide.createIcons();
+
+            document.querySelectorAll('.delete-hawkview-entry-btn').forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const entryId = parseInt(event.currentTarget.dataset.id);
+                    const confirmDelete = await showMessage("Confirm Delete", "Are you sure you want to delete this HawkView entry?");
+                    if (confirmDelete) {
+                        try {
+                            await deleteEntry(STORE_HAWKVIEW_JOURNAL, entryId);
+                            await showMessage("Deleted", "HawkView entry deleted successfully.");
+                            await displayHawkViewJournal(); // Re-display list after deletion
+                            await renderTakeUnderControlProgressChart(); // Re-render the progress chart
+                        } catch (error) {
+                            console.error("Error deleting HawkView entry:", error);
+                            showMessage("Error", "Failed to delete HawkView entry.");
+                        }
+                    }
+                });
+            });
+        }
+
+        /**
+         * Renders the "TakeUnderControl Progress" chart.
+         */
+        async function renderTakeUnderControlProgressChart() {
+            Chart.getChart('hawkview-progress-chart')?.destroy(); // Destroy existing chart
+            allHawkViewEntries = await getEntries(STORE_HAWKVIEW_JOURNAL); // Ensure fresh data
+
+            const isDarkTheme = document.documentElement.classList.contains('dark');
+            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-text-color').trim();
+            const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color').trim();
+            const tooltipBgColor = isDarkTheme ? 'rgba(31, 41, 55, 0.8)' : 'rgba(255,255,255,0.8)';
+            const tooltipBorderColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+
+            const sortedEntries = [...allHawkViewEntries].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const labels = sortedEntries.map(entry => entry.date);
+            const data = sortedEntries.map(entry => {
+                // Map ranks to numerical values for charting
+                switch (entry.rank) {
+                    case 'Low Control (0-2)': return 1;
+                    case 'Moderate Control (3-5)': return 2;
+                    case 'High Control (6-9)': return 3;
+                    case 'Top Tier (10+)': return 4;
+                    default: return 0; // Should not happen if rank is always set
+                }
+            });
+
+            const ctx = document.getElementById('hawkview-progress-chart');
+            if (!ctx) return;
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'TakeUnderControl Rank',
+                        data: data,
+                        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim(),
+                        backgroundColor: isDarkTheme ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--accent-primary').trim(),
+                        pointBorderColor: 'white',
+                        pointHoverRadius: 7,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: tooltipBgColor,
+                            borderColor: tooltipBorderColor,
+                            borderWidth: 1,
+                            titleColor: textColor,
+                            bodyColor: textColor,
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    let rankText = '';
+                                    switch (value) {
+                                        case 1: rankText = 'Low Control (0-2 items)'; break;
+                                        case 2: rankText = 'Moderate Control (3-5 items)'; break;
+                                        case 3: rankText = 'High Control (6-9 items)'; break;
+                                        case 4: rankText = 'Top Tier (10+ items)'; break;
+                                        default: rankText = 'N/A';
+                                    }
+                                    return `Rank: ${rankText}`;
+                                }
+                            }
+                        },
+                        datalabels: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textColor },
+                            grid: { color: gridColor }
+                        },
+                        y: {
+                            min: 0,
+                            max: 4.5, // Slightly above max rank for better visual spacing
+                            ticks: {
+                                color: textColor,
+                                stepSize: 1,
+                                callback: function(value) {
+                                    switch (value) {
+                                        case 1: return 'Low';
+                                        case 2: return 'Moderate';
+                                        case 3: return 'High';
+                                        case 4: return 'Top';
+                                        default: return '';
+                                    }
+                                }
+                            },
+                            grid: { color: gridColor }
+                        }
+                    }
+                }
+            });
+        }
+
 
         /**
          * Calculates and updates P&L, Charges, and Net P&L for a specific table row.
@@ -3814,7 +4444,7 @@
             destroyAllCharts();
 
             // When navigating away from P&L Calculator, close the popup/new tab if open
-            if (viewId !== 'lot-size-calculator') {
+            if (viewId !== 'take-under-control') { // Changed from lot-size-calculator
                 if (scanModePopup && !scanModePopup.closed) {
                     scanModePopup.close();
                     scanModePopup = null;
@@ -3847,12 +4477,9 @@
                 case 'reflections':
                     await renderReflections();
                     break;
-                case 'lot-size-calculator': // Now P&L Calculator view
-                    renderLotSizeCalculator();
+                case 'take-under-control': // Now TakeUnderControl view
+                    renderSectorHawkView();
                     break;
-                // case 'brokerage-calculator': // Removed
-                //     renderBrokerageCalculator();
-                //     break;
                 case 'settings':
                     renderSettings();
                     break;
@@ -3894,7 +4521,7 @@
             document.getElementById('nav-view-trades').addEventListener('click', (e) => { e.preventDefault(); showView('view-trades'); });
             document.getElementById('nav-analytics').addEventListener('click', (e) => { e.preventDefault(); showView('analytics'); });
             document.getElementById('nav-reflections').addEventListener('click', (e) => { e.preventDefault(); showView('reflections'); });
-            document.getElementById('nav-lot-size-calculator').addEventListener('click', (e) => { e.preventDefault(); showView('lot-size-calculator'); });
+            document.getElementById('nav-take-under-control').addEventListener('click', (e) => { e.preventDefault(); showView('take-under-control'); }); // Changed ID
             document.getElementById('nav-settings').addEventListener('click', (e) => { e.preventDefault(); showView('settings'); });
 
             // Theme toggle button in sidebar
