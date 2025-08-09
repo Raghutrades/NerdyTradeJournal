@@ -791,7 +791,7 @@
                     <li>
                         <a href="#" id="nav-lot-size-calculator" class="flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm">
                             <div class="flex items-center sidebar-link-content">
-                                <i data-lucide="calculator" class="mr-2"></i> <span class="sidebar-text">P&L Calculator</span>
+                                <i data-lucide="calculator" class="mr-2"></i> <span class="sidebar-text">Sectors HawkView 🦅</span>
                             </div>
                         </a>
                     </li>
@@ -3400,7 +3400,7 @@
 
 
     /**
-     * Renders the Lot Size Calculator page (now P&L Calculator).
+     * Renders the Lot Size Calculator page (now Sectors HawkView 🦅).
      */
     function renderLotSizeCalculator() {
         const appContent = document.getElementById('app-content');
@@ -3410,7 +3410,7 @@
         appContent.innerHTML = `
             <div class="bg-zinc-800 rounded-lg p-6 shadow-xl mb-6 border border-zinc-700">
                 <div class="flex items-center mb-5"> <!-- Flex container for title and button -->
-                    <h2 class="text-2xl font-bold text-indigo-400">P&L Calculator</h2>
+                    <h2 class="text-2xl font-bold text-indigo-400">Sectors HawkView 🦅</h2>
                     <button id="scanModeToggle" class="scan-mode-toggle">
                         <span class="scan-icon">🔍</span>
                         <span>Scan Mode</span>
@@ -3576,7 +3576,7 @@
     }
 
     /**
-     * Filters and displays lot size data (now P&L Calculator data).
+     * Filters and displays lot size data (now Sectors HawkView 🦅 data).
      */
     function filterAndDisplayLotSizes() {
         const query = document.getElementById('lot-calculator-search').value.toLowerCase();
@@ -3656,7 +3656,7 @@
     }
 
     /**
-     * Exports the current state of the P&L Calculator table to a CSV file.
+     * Exports the current state of the Sectors HawkView 🦅 table to a CSV file.
      */
     function exportLotSizeTableAsCSV() {
         const table = document.querySelector('.trade-table');
@@ -3855,7 +3855,7 @@
         // Before rendering a new view, destroy all existing charts
         destroyAllCharts();
 
-        // When navigating away from P&L Calculator, close the popup/new tab if open
+        // When navigating away from Sectors HawkView 🦅, close the popup/new tab if open
         if (viewId !== 'lot-size-calculator') {
             if (scanModePopup && !scanModePopup.closed) {
                 scanModePopup.close();
@@ -3889,7 +3889,7 @@
             case 'reflections':
                 await renderReflections();
                 break;
-            case 'lot-size-calculator': // Now P&L Calculator view
+            case 'lot-size-calculator': // Now Sectors HawkView 🦅 view
                 renderLotSizeCalculator();
                 break;
             // case 'brokerage-calculator': // Removed
